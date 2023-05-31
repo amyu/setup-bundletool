@@ -1,16 +1,42 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as toolCache from '@actions/tool-cache'
+import fs from 'fs/promises'
+import path from 'path'
+import os from 'os'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const downloadVersion = '1.15.1/bundletool-all-1.15.1.jar'
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const downloadDir = path.join(os.homedir(), '.bundletool')
+    const downloadJarPath = path.join(
+      downloadDir,
+      downloadVersion.split('/')[1]
+    )
+    const bundleToolPath = path.join(downloadDir, 'bundletool')
 
-    core.setOutput('time', new Date().toTimeString())
+    await fs.mkdir(downloadDir)
+
+    core.info('start download')
+    await toolCache.downloadTool(
+      `https://github.com/google/bundletool/releases/download/${downloadVersion}`,
+      downloadJarPath
+    )
+    core.info('end download')
+
+    core.info('start create script')
+    await fs.writeFile(
+      bundleToolPath,
+      `
+      #!/bin/bash
+      java -jar ${downloadJarPath} "$@"
+    `
+    )
+    await fs.chmod(bundleToolPath, '755')
+    core.info('end create script')
+
+    core.info('start add path')
+    core.addPath(downloadDir)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

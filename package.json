@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "setup-bundletool",
+  "version": "1.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "setup bundletool",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -19,13 +19,15 @@
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "setup",
+    "bundletool",
+    "android"
   ],
-  "author": "",
+  "author": "amyu",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "@actions/tool-cache": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^18.16.3",

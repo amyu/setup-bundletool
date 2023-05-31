@@ -1,24 +1,28 @@
 name: 'build-test'
-on: # rebuild any PRs and main branch changes
+on:
   pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}-test
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          npm install
-      - run: |
-          npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
         with:
-          milliseconds: 1000
+          java-version: 17
+          distribution: temurin
+
+      - uses: ./
+
+      - run: bundletool help
+
+      - run: bundletool version
