@@ -9,7 +9,7 @@ This action provides the following functionality for GitHub Actions users:
 
 See [action.yml](action.yml)
 
-**Basic:**
+**Basic** (automatically uses the latest GitHub release):
 
 ```yaml
 steps:

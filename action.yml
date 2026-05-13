@@ -4,9 +4,8 @@ author: 'amyu'
 
 inputs:
   version:
-    description: 'Bundletool version'
+    description: 'Bundletool version. If not specified, downloads the latest GitHub release.'
     required: false
-    default: '1.18.3'
 
 runs:
   using: 'node24'
