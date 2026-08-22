@@ -34701,9 +34701,28 @@ var promises_default = /*#__PURE__*/__nccwpck_require__.n(promises_namespaceObje
 
 
 
+// Fetch the latest release metadata from GitHub
+async function getLatestVersion() {
+    const response = await fetch('https://github.com/google/bundletool/releases/latest', { redirect: 'manual' });
+    const location = response.headers.get('location');
+    if (!location) {
+        throw new Error('Unable to determine latest release location from GitHub response');
+    }
+    const tag = location.split('/').pop();
+    if (!tag) {
+        throw new Error('Unable to extract version tag from GitHub redirect location');
+    }
+    return tag;
+}
+// Main action entry point
 async function run() {
     try {
-        const version = getInput('version');
+        let version = getInput('version');
+        if (!version) {
+            info('Fetching latest bundletool release from GitHub…');
+            version = await getLatestVersion();
+            info(`Using latest version: ${version}`);
+        }
         const downloadVersion = `${version}/bundletool-all-${version}.jar`;
         const downloadDir = external_path_default().join(external_os_default().homedir(), '.bundletool');
         const downloadJarPath = external_path_default().join(downloadDir, downloadVersion.split('/')[1]);
